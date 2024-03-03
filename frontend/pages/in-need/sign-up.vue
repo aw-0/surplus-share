@@ -35,7 +35,7 @@ const submit = async () => {
         <input 
             type="text" 
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:border-2 focus:ring-0 focus:ring-offset-0" 
-            placeholder="Andrew Wolf"
+            placeholder="John Smith"
             v-model="name"
         >
         <br />
@@ -43,7 +43,7 @@ const submit = async () => {
         <input 
             type="text" 
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:border-2 focus:ring-0 focus:ring-offset-0" 
-            placeholder="231 Surrey Lane"
+            placeholder="123 Main Street"
             v-model="address"
         >
         <br/>
@@ -85,7 +85,7 @@ const submit = async () => {
             <option>12pm</option>
         </select>
         <button 
-            class="mt-6 bg-secondary text-white w-full p-2 rounded-md hover:bg-secondary"
+            class="mt-6 bg-secondary text-white w-full p-2 rounded-md hover:bg-gray-800 transition-all duration-200 hover:rounded-xl hover:shadow-xl"
             @click="submit"
             type="button"
         >Sign up</button>

@@ -1,30 +1,23 @@
-from urllib.parse import urlencode
 import requests
-import os
 import random
-import math
-from dotenv import load_dotenv
-import urllib
-# from twilio.rest import Client
+from twilio.rest import Client
 
 account_sid = "ACf9d710510a3e71df488fcdb209e02bbe"
 auth_token  = "0709e5ad8b67972c60bda0cea54de381"
-
-load_dotenv()
 
 def get_distance(address1, address2):
     data = requests.get(f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={address1}&destinations={address2}&key=AIzaSyCRjohDPZ0D83rNb2Nh2N8VGNgJXKBdenM").json()
     return data["rows"][0]["elements"][0]["distance"]["value"]
 
-# def send_sms(to, body):
-#     client = Client(account_sid, auth_token)
+def send_sms(to, body):
+    client = Client(account_sid, auth_token)
 
-#     message = client.messages.create(
-#         to=to, 
-#         from_="+12243520240",
-#         body=body)
+    message = client.messages.create(
+        to=to, 
+        from_="+12243520240",
+        body=body)
 
-#     return True
+    return True
 
 def create_mega_route(addresses):
     # Encode addresses for URL
@@ -40,7 +33,6 @@ def create_mega_route(addresses):
 
 def calculate_total_distance(distances_dict, children):
     total_distance = 0
-    print(children)
     for x in range(len(children) - 1):
         child1 = children[x]
         child2 = children[x+1]
@@ -54,14 +46,15 @@ def calculate_total_distance(distances_dict, children):
 
 def get_all_distances(addresses):
     distances = {}
-    print(len(addresses))
     for x in range(len(addresses)):
         for y in range(x+1, len(addresses)):
             distances[f"{x}-{y}"] = get_distance(addresses[x], addresses[y])
     return distances
 
 
-
+def geocode_address(address):
+    data = requests.get(f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key=AIzaSyCRjohDPZ0D83rNb2Nh2N8VGNgJXKBdenM").json()
+    return data["results"][0]["geometry"]["location"]
 
 
 def makeGenChildren(numAddresses):
@@ -95,19 +88,12 @@ def makeGenChildren(numAddresses):
 
         def createChildren(parent1, parent2):
             child = []
-            x = random.randint(math.floor(len(parent1)/3 - 1), math.floor(len(parent1)/3 + 1))
-            y = random.randint(math.floor((len(parent2)*2)//3 - 1), math.floor((len(parent2)*2)//3 + 1))
-
-            for i in range(0,x):
-                child.append(parent1[i])
-            for i in range(x, y):
-                child.append(parent2[i])
-            for i in range(y,len(parent1)):
-                child.append(parent1[i])
+            portion1 = len(parent1) // 3
+            portion2 = (len(parent2) * 2) // 3
+            child = parent1[:portion1] + parent2[portion1:portion2] + parent1[portion2:]
             
             replaceDuplicates(child)
-            
-            
+                        
             i = random.randint(0, len(child) - 1)
             j = random.randint(0, len(child) - 1)
             while(i == j):
@@ -161,8 +147,10 @@ def makeGenChildren(numAddresses):
             for i in range(0, len(parentList)):
                 if(i == len(parentList) - 1):
                     children.append(createChildren(parentList[i], parentList[0]))
+                    
                 else:
                     children.append(createChildren(parentList[i], parentList[i+1]))
+                    
             
             return children
 
@@ -172,15 +160,9 @@ def makeGenChildren(numAddresses):
 
         def createChildren(parent1, parent2):
             child = []
-            x = random.randint(math.floor(len(parent1)/3 - 1), math.floor(len(parent1)/3 + 1))
-            y = random.randint(math.floor((len(parent2)*2)//3 - 1), math.floor((len(parent2)*2)//3 + 1))
-
-            for i in range(0,x):
-                child.append(parent1[i])
-            for i in range(x, y):
-                child.append(parent2[i])
-            for i in range(y,len(parent1)):
-                child.append(parent1[i])
+            portion1 = len(parent1) // 3
+            portion2 = (len(parent2) * 2) // 3
+            child = parent1[:portion1] + parent2[portion1:portion2] + parent1[portion2:]
             
             replaceDuplicates(child)
             
@@ -198,6 +180,7 @@ def makeGenChildren(numAddresses):
         def replaceDuplicates(childX):
             
             duplicates = getDuplicates(childX)
+           
             missing = findMissing(childX)
             for x in childX:
                 for y in duplicates:
@@ -235,15 +218,18 @@ def makeGenChildren(numAddresses):
             for i in range(0, len(parentList)):
                 if(i == len(parentList) - 1):
                     children.append(createChildren(parentList[i], parentList[0]))
+                    
                 else:
                     children.append(createChildren(parentList[i], parentList[i+1]))
-            print(children)
+                    
+            
             return children
 
         return findOptimalRoute()
 
-
-    children = generation(generation(generation(generation(generation(generation(generation(generationEmpty())))))))
+    
+    
+    children = generation(generation(generation(generation(generationEmpty()))))
     return children
     
     

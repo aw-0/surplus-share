@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import os
 from flask_cors import CORS, cross_origin
 
-from helpers import get_distance, create_mega_route, get_all_distances, findBestChild
+from helpers import geocode_address, get_distance, create_mega_route, get_all_distances, findBestChild
 from database import save_user, save_biz, get_all_pages_by_time, get_all_pages
 from dotenv import load_dotenv
 
@@ -95,32 +95,17 @@ def getBizRoute():
     
     users = get_all_pages_by_time("users", data["time"])
     addresses = [users[key]["address"] + ", " + users[key]["city"] for key in users.keys()]
-    
+    for user in users:
+        users[user]["longlat"] = geocode_address(users[user]["address"] + ", " + users[user]["city"])
     distances_dict = get_all_distances(addresses)
     if len(distances_dict) <= 2:
         best_child = addresses
         best_child_reconverted = addresses
     else:
         best_child = findBestChild(distances_dict, len(addresses))
-        best_child_reconverted = [addresses[i] for i in best_child]
+        best_child_reconverted = ["1 Stevenson Dr, Lincolnshire"] + [addresses[i] for i in best_child]
     
-    return jsonify({"link": create_mega_route(best_child_reconverted), "addresses": best_child_reconverted})
-
-"""
-{
-    "time": "5am"
-}
-
-{
-    addresses: [sorted_addresses],
-    users: {
-        'uid': {
-            meals: number,
-            longlat: "string"
-        }
-    }
-    link: "string"
-}"""
+    return jsonify({"link": create_mega_route(best_child_reconverted), "addresses": best_child_reconverted, "users": users})
 
 
 if __name__ == "__main__":

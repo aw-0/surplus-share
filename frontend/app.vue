@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 </script>
 
@@ -15,7 +15,7 @@ import {
         <div class="mr-4 ">
         <NuxtLink class="navbar-brand flex py-2 ml-2" to="/">
             <img src="/logo.png" alt="Logo" width="60" height="60" class="d-inline-block align-text-top">
-            <p class="my-auto font-bold text-lg">SurplusShare</p>
+            <p class="text-primary my-auto font-bold text-lg">SurplusShare</p>
         </NuxtLink>
         </div>
         <NavigationMenu>
@@ -23,14 +23,14 @@ import {
                 <NavigationMenuItem>
                     <NuxtLink to="/in-need/sign-up">
                         <NavigationMenuLink :class="navigationMenuTriggerStyle()">
-                            Request Help
+                            For Individuals
                         </NavigationMenuLink>
                     </NuxtLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                     <NuxtLink to="/business/sign-up">
                         <NavigationMenuLink :class="navigationMenuTriggerStyle()">
-                            Donate Food
+                            For Businesses
                         </NavigationMenuLink>
                     </NuxtLink>
                 </NavigationMenuItem>

@@ -47,7 +47,7 @@ const submit = async () => {
         <input 
             type="text" 
             class="w-full mt-1 rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:border-2 focus:ring-0 focus:ring-offset-0" 
-            placeholder="231 Surrey Lane"
+            placeholder="123 Main Street"
             v-model="address"
         >
         <br/>
@@ -63,11 +63,11 @@ const submit = async () => {
         <input 
             type="tel" 
             class="w-full mt-1 rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:border-2 focus:ring-0 focus:ring-offset-0" 
-            placeholder="+18473451300"
+            placeholder="+18473472397"
             v-model="phone"
         >
         <br/>
-        <h3 class="font-semibold mt-4">What type of food</h3>
+        <h3 class="font-semibold mt-4">What type of food are you donating?</h3>
         <input 
             type="number" 
             class="w-full mt-1 rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:border-2 focus:ring-0 focus:ring-offset-0" 
@@ -79,7 +79,7 @@ const submit = async () => {
         <input 
             type="number" 
             class="w-full mt-1 rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:border-2 focus:ring-0 focus:ring-offset-0" 
-            placeholder="3 meals"
+            placeholder="3"
             v-model="foodAmount"
         >
         <br/>
@@ -89,7 +89,7 @@ const submit = async () => {
             v-model="time"
         >
             <option selected>5am</option>
-            <option>11pm</option>
+            <option>12pm</option>
         </select>
         <p class="text-sm text-gray-500">We will text you updates on the status of our drivers</p>
         <h3 class="font-semibold mt-4">Dietary Restrictions</h3>
@@ -104,7 +104,7 @@ const submit = async () => {
             <option>Kosher</option>
         </select>
         <button 
-            class="mt-6 bg-secondary text-white w-full p-2 rounded-md hover:bg-secondary"
+            class="mt-6 bg-secondary text-white w-full p-2 rounded-md hover:bg-gray-800 transition-all duration-200 hover:rounded-xl hover:shadow-xl"
             @click="submit"
             type="button"
         >Sign up</button>

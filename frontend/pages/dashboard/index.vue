@@ -68,25 +68,25 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h1 class="text-3xl font-bold">SurplusShare Dashboard</h1>
+    <h1 class="text-3xl font-bold">Volunteer Dashboard</h1>
     <p class="mt-2 text-gray-500">View recipients and businesses, and initiate routes to drop off/pick up surplus.</p>
 
     <h2 class="mt-4 text-3xl font-semibold">📅 Today's summary</h2>
     <div class="my-4 flex">
-        <div class="flex ml-4">
+        <div class="flex">
             <div v-if="loadingFoodAmount" class="px-9 py-6 bg-gray-200 animate-pulse rounded-md"></div>
-            <h1 v-else class="text-6xl font-bold">{{ Object.values(foodAmount).reduce((a, b) => a + b, 0) }}</h1>
+            <h1 v-else class="text-6xl font-bold">{{ Object.values(foodAmount).reduce((a, b) => a + b, 0) * 2}}</h1>
             <p class="mt-9 ml-1 text-sm">total meals</p>
         </div>
         <div class="ml-4 flex">
             <div v-if="loadingUsers" class="px-4 py-6 bg-gray-200 animate-pulse rounded-md"></div>
             <h1 v-else class="text-6xl font-bold">{{ Object.keys(users).length }}</h1>
-            <p class="mt-9 ml-1 text-sm">recipients requesting food</p>
+            <p class="mt-9 ml-1 text-sm">recipients requesting meals</p>
         </div>
         <div class="flex ml-4">
             <div v-if="loadingBusinesses" class="px-4 py-6 bg-gray-200 animate-pulse rounded-md"></div>
             <h1 v-else class="text-6xl font-bold">{{ Object.keys(businesses).length }}</h1>
-            <p class="mt-9 ml-1 text-sm">businesses supplying food</p>
+            <p class="mt-9 ml-1 text-sm">businesses supplying meals</p>
         </div>
     </div>
 
@@ -100,7 +100,7 @@ onMounted(async () => {
             </TabsTrigger>
         </TabsList>
         <TabsContent value="recipients">
-            <h3 class="mt-2 text-2xl font-semibold">🌅 5AM drop off</h3>
+            <h3 class="mt-4 text-2xl font-semibold">🌅 5AM drop off</h3>
             <div v-if="loadingUsers || loadingFoodAmount" class="mt-2 bg-gray-200 w-full py-24 rounded-lg animate-pulse" />
             <div v-else>
                 <Table>
@@ -182,7 +182,7 @@ onMounted(async () => {
                             </TableHead>
                             <TableHead>Address</TableHead>
                             <TableHead>Phone Number</TableHead>
-                            <TableHead>Type of Food</TableHead>
+                            <TableHead>Type of Meal</TableHead>
                             <TableHead>Amount of Food (~Meals)</TableHead>
                             <TableHead>Dietary Restrictions</TableHead>
                             <TableHead class="text-right">
@@ -206,6 +206,9 @@ onMounted(async () => {
                         </TableRow>
                     </TableBody>
                 </Table>
+                <div class="mt-4 mb-6">
+                    <NuxtLink to="/dashboard/navigate?type=users&time=5am" class="px-6 py-2 bg-secondary rounded-lg text-white hover:bg-secondary/2">Navigate Pick Up Route</NuxtLink>
+                </div>
             </div>
         </TabsContent>
     </Tabs>
