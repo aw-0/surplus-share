@@ -11,6 +11,8 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+delivery_info_cache = {}
+
 @app.route("/registerUser", methods=["POST", "OPTIONS"])
 @cross_origin()
 def registerUser():
@@ -42,48 +44,89 @@ def getAllBiz():
 
 @app.route("/getFoodAmount", methods=["GET"])
 def getFoodAmount():
+    global delivery_info_cache
+    
     food_types = ["None", "Halal", "Kosher", "Vegetarian/Vegan", "Gluten Free"]
     
-    user_requests = {type: 0 for type in food_types}
+    user_request_count = {type: 0 for type in food_types}
     users = get_all_pages("users")
     for key in users.keys():
-        user_requests[users[key]["diet"]] += 1
+        user_request_count[users[key]["diet"]] += 1
     
     biz_services = {}
     bizs = get_all_pages("businesses")
     for key in bizs.keys():
         biz_services[bizs[key]["diet"]] = int(bizs[key]["foodAmount"])
     
-    deliveries = {}
+    deliveries_amount = {}
+    delivery_info_cache = {}
     for type in food_types:
-        deliveries[type] = biz_services[type] // user_requests[type]
+        deliveries_amount[type] = biz_services[type] // user_request_count[type]
+        delivery_info_cache[type] = {type: deliveries_amount[type]}
+    print(delivery_info_cache, deliveries_amount, user_request_count)
     
-    while (deliveries["Gluten Free"] > deliveries["Halal"] or deliveries["Gluten Free"] > deliveries["Kosher"] or deliveries["Gluten Free"] > deliveries["Vegetarian/Vegan"]):
-        if deliveries["Gluten Free"] > deliveries["Halal"]:
-            deliveries["Gluten Free"] -= 1
-            deliveries["Halal"] += 1
-        elif deliveries["Gluten Free"] > deliveries["Kosher"]:
-            deliveries["Gluten Free"] -= 1
-            deliveries["Kosher"] += 1
+    while (deliveries_amount["Gluten Free"] * user_request_count["Gluten Free"] > deliveries_amount["Halal"] * user_request_count["Halal"] or deliveries_amount["Gluten Free"] * user_request_count["Gluten Free"] > deliveries_amount["Kosher"] * user_request_count["Kosher"] or deliveries_amount["Gluten Free"] * user_request_count["Gluten Free"] > deliveries_amount["Vegetarian/Vegan"] * user_request_count["Vegetarian/Vegan"]):
+        print(f"Before: {delivery_info_cache}")
+        if deliveries_amount["Gluten Free"] * user_request_count["Gluten Free"] > deliveries_amount["Halal"] * user_request_count["Halal"]:
+            deliveries_amount["Gluten Free"] -= user_request_count["Halal"]
+            deliveries_amount["Halal"] += user_request_count["Halal"]
+            delivery_info_cache["Gluten Free"]["Gluten Free"] -= 1
+            if delivery_info_cache["Halal"].get("Gluten Free"):
+                delivery_info_cache["Halal"]["Gluten Free"] += 1
+            else:
+                delivery_info_cache["Halal"]["Gluten Free"] = 1
+        elif deliveries_amount["Gluten Free"] * user_request_count["Gluten Free"] > deliveries_amount["Kosher"] * user_request_count["Kosher"]:
+            deliveries_amount["Gluten Free"] -= user_request_count["Kosher"]
+            deliveries_amount["Kosher"] += user_request_count["Kosher"]
+            delivery_info_cache["Gluten Free"]["Gluten Free"] -= 1
+            if delivery_info_cache["Kosher"].get("Gluten Free"):
+                delivery_info_cache["Kosher"]["Gluten Free"] += 1
+            else:
+                delivery_info_cache["Kosher"]["Gluten Free"] = 1
         else:
-            deliveries["Gluten Free"] -= 1
-            deliveries["Vegetarian/Vegan"] += 1
-            
-    while (deliveries["None"] < deliveries["Halal"] or deliveries["None"] < deliveries["Kosher"] or deliveries["None"] < deliveries["Vegetarian/Vegan"] or deliveries["None"] < deliveries["Gluten Free"]):
-        if deliveries["None"] < deliveries["Halal"]:
-            deliveries["None"] += 1
-            deliveries["Halal"] -= 1
-        elif deliveries["None"] < deliveries["Kosher"]:
-            deliveries["None"] += 1
-            deliveries["Kosher"] -= 1
-        elif deliveries["None"] < deliveries["Vegetarian/Vegan"]:
-            deliveries["None"] += 1
-            deliveries["Vegetarian/Vegan"] -= 1
+            deliveries_amount["Gluten Free"] -= user_request_count["Vegetarian/Vegan"]
+            deliveries_amount["Vegetarian/Vegan"] += user_request_count["Vegetarian/Vegan"]
+            delivery_info_cache["Gluten Free"]["Gluten Free"] -= 1
+            if delivery_info_cache["Vegetarian/Vegan"].get("Gluten Free"):
+                delivery_info_cache["Vegetarian/Vegan"]["Gluten Free"] += 1
+            else:
+                delivery_info_cache["Vegetarian/Vegan"]["Gluten Free"] = 1
+        print(f"After: {delivery_info_cache}")
+    while (deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Halal"] * user_request_count["Halal"] or deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Kosher"] * user_request_count["Kosher"] or deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Vegetarian/Vegan"] * user_request_count["Vegetarian/Vegan"] or deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Gluten Free"] * user_request_count["Gluten Free"]):
+        if deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Halal"] * user_request_count["Halal"]:
+            deliveries_amount["None"] += user_request_count["Halal"]
+            deliveries_amount["Halal"] -= user_request_count["Halal"]
+            delivery_info_cache["Halal"]["Halal"] -= 1
+            if delivery_info_cache["None"].get("Halal"):
+                delivery_info_cache["None"]["Halal"] += 1
+            else:
+                delivery_info_cache["None"]["Halal"] = 1
+        elif deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Kosher"] * user_request_count["Kosher"]:
+            deliveries_amount["None"] += user_request_count["Kosher"]
+            deliveries_amount["Kosher"] -= user_request_count["Kosher"]
+            delivery_info_cache["Kosher"]["Kosher"] -= 1
+            if delivery_info_cache["None"].get("Kosher"):
+                delivery_info_cache["None"]["Kosher"] += 1
+            else:
+                delivery_info_cache["None"]["Kosher"] = 1
+        elif deliveries_amount["None"] * user_request_count["None"] < deliveries_amount["Vegetarian/Vegan"] * user_request_count["Vegetarian/Vegan"]:
+            deliveries_amount["None"] += user_request_count["Vegetarian/Vegan"]
+            deliveries_amount["Vegetarian/Vegan"] -= user_request_count["Vegetarian/Vegan"]
+            delivery_info_cache["Vegetarian/Vegan"]["Vegetarian/Vegan"] -= 1
+            if delivery_info_cache["None"].get("Vegetarian/Vegan"):
+                delivery_info_cache["None"]["Vegetarian/Vegan"] += 1
+            else:
+                delivery_info_cache["None"]["Vegetarian/Vegan"] = 1
         else:
-            deliveries["None"] += 1
-            deliveries["Gluten Free"] -= 1
+            deliveries_amount["None"] += user_request_count["Gluten Free"]
+            deliveries_amount["Gluten Free"] -= user_request_count["Gluten Free"]
+            delivery_info_cache["Gluten Free"]["Gluten Free"] -= 1
+            if delivery_info_cache["None"].get("Gluten Free"):
+                delivery_info_cache["None"]["Gluten Free"] += 1
+            else:
+                delivery_info_cache["None"]["Gluten Free"] = 1
 
-    return jsonify(deliveries)
+    return jsonify(deliveries_amount)
 
     
 @app.route("/getUsersRoute", methods=["POST", "OPTIONS"])
@@ -95,8 +138,13 @@ def getBizRoute():
     
     users = get_all_pages_by_time("users", data["time"])
     addresses = [users[key]["address"] + ", " + users[key]["city"] for key in users.keys()]
+    
+    if len(delivery_info_cache) == 0:
+        getFoodAmount()
+        
     for user in users:
         users[user]["longlat"] = geocode_address(users[user]["address"] + ", " + users[user]["city"])
+        users[user]["deliveryInfo"] = delivery_info_cache[users[user]["diet"]]
     distances_dict = get_all_distances(addresses)
     if len(distances_dict) <= 2:
         best_child = addresses
@@ -104,7 +152,7 @@ def getBizRoute():
     else:
         best_child = findBestChild(distances_dict, len(addresses))
         best_child_reconverted = ["1 Stevenson Dr, Lincolnshire"] + [addresses[i] for i in best_child]
-    
+    print(jsonify({"link": create_mega_route(best_child_reconverted), "addresses": best_child_reconverted, "users": users}))
     return jsonify({"link": create_mega_route(best_child_reconverted), "addresses": best_child_reconverted, "users": users})
 
 

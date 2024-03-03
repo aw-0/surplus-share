@@ -74,8 +74,8 @@ onMounted(async () => {
     <h2 class="mt-4 text-3xl font-semibold">📅 Today's summary</h2>
     <div class="my-4 flex">
         <div class="flex">
-            <div v-if="loadingFoodAmount" class="px-9 py-6 bg-gray-200 animate-pulse rounded-md"></div>
-            <h1 v-else class="text-6xl font-bold">{{ Object.values(foodAmount).reduce((a, b) => a + b, 0) * 2}}</h1>
+            <div v-if="loadingBusinesses" class="px-9 py-6 bg-gray-200 animate-pulse rounded-md"></div>
+            <h1 v-else class="text-6xl font-bold">{{ Object.values(businesses).reduce((a, b) => a + Number(b.foodAmount), 0)}}</h1>
             <p class="mt-9 ml-1 text-sm">total meals</p>
         </div>
         <div class="ml-4 flex">

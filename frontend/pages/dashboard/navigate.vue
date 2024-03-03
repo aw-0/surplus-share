@@ -92,7 +92,13 @@ const returnToDash = () => {
                 <div class="h-full">
                     <h2 class="mt-4 text-2xl">Next address:</h2>  
                     <div class="grid h-3/4 place-items-center">              
+                        <div>
                         <h2 class="text-4xl p-2 rounded-md bg-gray-300">{{ stops[currentStop] }}</h2>
+                            <h3 class="mt-4 text-3xl font-semibold">Meals:</h3>
+                            <li class="text-2xl" v-for="value in Object.entries(Object.values(itemInfo).find((i) => (i.address + ', ' + i.city) === stops[currentStop]).deliveryInfo)">
+                                {{ value[0] }}: {{ value[1] }}
+                            </li>
+                        </div>
                     </div>
                 </div>
                 <div class="absolute bottom-0">

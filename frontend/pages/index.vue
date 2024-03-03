@@ -22,10 +22,11 @@
         </div>
         <img class="mx-auto rounded-lg" src="/aadi-graphic.png" />
     </div>
-    
-    <p class="text-xl font-semibold mx-auto">
-        Our Mission is to help people by connecting them to businesses with excess food.
-    </p>
+    <div class="mt-6 flex flex-col items-center">
+        <p class="text-2xl font-semibold">
+            Our Mission is to help people by connecting them to businesses with excess food.
+        </p>
+    </div>
 
 
 </template>

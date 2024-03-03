@@ -44,7 +44,7 @@ import {
             </NavigationMenuList>
         </NavigationMenu>
     </nav>
-    <div class="bg-secondary h-screen px-24 py-12">
+    <div class="bg-secondary h-screen max-h-max px-24 py-12">
         <div class="bg-white p-6 rounded-md">
             <NuxtPage />
         </div>
