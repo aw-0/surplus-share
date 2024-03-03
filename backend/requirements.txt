@@ -1,0 +1,5 @@
+python-dotenv
+Flask
+requests
+firebase-admin
+flask-cors
